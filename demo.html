@@ -5,10 +5,15 @@
     <title></title>
   </head>
   <body>
-
+    <div>
+      <button>click</button>
+    </div>
     <canvas id="myCanvas" width="360" height="450" style="border:1px solid #d3d3d3;">
     </canvas>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
+      var socket = io();
+
       if (window.DeviceOrientationEvent) {
         window.addEventListener("deviceorientation", deviceOrientationListener);
       } else {
@@ -16,6 +21,7 @@
       }
 
       function deviceOrientationListener(event) {
+        socket.emit('rotate', event);
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
 
@@ -39,6 +45,14 @@
         ctx.beginPath();
         ctx.fillRect(90, 340, 180, event.gamma);
       }
+
+      // $('button').on('click', () => {
+      //   alert('click')
+      // })
+
+      document.querySelector('button').addEventListener('click', () => {
+        socket.emit('demo:click')
+      })
     </script>
 
   </body>

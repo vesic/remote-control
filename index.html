@@ -57,6 +57,19 @@
 
     var socket = io();
 
+    // listen from demo page
+    socket.on('demo:click', () => {
+      console.log('click from demo');
+    })
+
+    // end listen from demo page
+
+    // listen for rotation
+    socket.on('rotation', event => {
+      console.log(event);
+    })
+
+    // end listen for rotation
     socket.on('init', data => {
       $('tbody').html(buildTable(data));
     })

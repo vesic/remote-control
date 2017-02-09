@@ -23,6 +23,15 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
+
+  socket.on('demo:click', () => {
+    console.log('click from demo!');
+    io.emit('demo:click')
+  })
+
+  socket.on('rotate', event => {
+    io.emit('rotation', event);
+  })
   // init clicks log
   socket.emit('init', events);
 
