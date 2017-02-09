@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css" media="screen" title="no title">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+      body {
+        background: #1abc9c;
+        /*font-family: 'Roboto', sans-serif;*/
+      }
+      h1 {
+        font-size: 2.5em;
+      }
+      .main {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="main">
+      <h2>Number of clients connected:</h2>
+      <div id="result"></div>
+    </div>
+
+    <div class="container">
+      <button id='btn' class="btn btn-default">click</button>
+    </div>
+
+    <div id='events' class='container'>
+      <h1>Click log:</h1>
+      <table class="table">
+        <tbody></tbody>
+      </table>
+      <!-- <ul class="list-group"> -->
+        <!-- <li class="list-group-item">Cras justo odio</li>
+        <li class="list-group-item">Dapibus ac facilisis in</li>
+        <li class="list-group-item">Morbi leo risus</li>
+        <li class="list-group-item">Porta ac consectetur ac</li>
+        <li class="list-group-item">Vestibulum at eros</li> -->
+      <!-- </ul> -->
+    </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script>
+    function buildTable(data) {
+      let eventData = ""
+      for (let i of data) {
+        eventData += `<tr class=""><td>${i.id}</td><td>${i.time}</td></tr>`
+      }
+      return eventData;
+    }
+
+    var socket = io();
+
+    socket.on('init', data => {
+      $('tbody').html(buildTable(data));
+    })
+
+    socket.on('rcv', data => console.log(data, 'received!'))
+    // socket.on('to-all', data => console.log(data, 'received!'))
+
+    socket.on('events', data => {
+      $('tbody').html(buildTable(data));
+    })
+
+    socket.on('noc', data => {
+      $('#result').html(`<h1 class="animated flash">${data}</h1>`)
+    })
+
+    var button = document.getElementById('btn');
+    button.addEventListener('click', event => {
+      socket.emit('click')
+    });
+
+  </script>
+  </body>
+</html>
