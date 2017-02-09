@@ -68,11 +68,12 @@
       $('tbody').html(buildTable(data));
     })
 
-    socket.on('noc', data => {
+    socket.on('clientCountUpdate', data => {
       $('#result').html(`<h1 class="animated flash">${data}</h1>`)
     })
 
     var button = document.getElementById('btn');
+
     button.addEventListener('click', event => {
       socket.emit('click')
     });

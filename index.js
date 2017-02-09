@@ -5,6 +5,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
 var moment = require('moment');
+var MobileDetect = require('mobile-detect');
 
 var port = process.env.PORT || 3000;
 
@@ -13,7 +14,11 @@ var l = 1
 var clients = {}
 var events = []
 
+let clientCount;
+
 app.get('/', function(req, res){
+  var md = new MobileDetect(req.headers['user-agent']);
+  console.log(md.is('iPhone'));
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -25,11 +30,9 @@ io.on('connection', function(socket){
     clients[socket.id] = socket
   }
 
-  let noc = Object.keys(clients).length;
+  clientCount = Object.keys(clients).length;
 
-  console.log(noc);
-
-  io.emit('noc', noc);
+  io.emit('clientCountUpdate', clientCount);
 
   // for (let i in clients) {
   //   console.log(clients[i].id);
@@ -42,8 +45,9 @@ io.on('connection', function(socket){
 
   socket.on('click', data => {
     events.push({id: socket.id, time: moment().format('MMMM Do YYYY, h:mm:ss a')})
-    io.emit('events', events)
-    // console.log('click', data);
+
+    io.emit('events', events);
+    console.log('click', events);
     // socket.emit('rcv', 'remote')
     // count = count + 1
     // if (count % 2 === 0) {
@@ -52,10 +56,9 @@ io.on('connection', function(socket){
   })
 
   socket.on('disconnect', function(){
-    console.log('*******');
-    delete clients[socket.id]
-    console.log('Total clients');
-    io.emit('noc', noc);
+    delete clients[socket.id];
+    clientCount = Object.keys(clients).length;
+    io.emit('clientCountUpdate', clientCount);
   });
 });
 
