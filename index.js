@@ -62,6 +62,10 @@ io.on('connection', function(socket){
   });
 });
 
+app.get('/demo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'demo.html'));
+});
+
 http.listen(port, function(){
   console.log(`listening on ${port}`);
 });
