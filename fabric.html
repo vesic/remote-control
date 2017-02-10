@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>fabric.html</title>
+</head>
+<body>
+  <canvas id='c' width="500" height="500" style="border: 1px dashed grey"></canvas>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.3/fabric.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  var socket = io();
+
+  socket.on('rotatedTriangle', gamma => {
+    triangle.rotate(gamma);
+    canvas.renderAll();
+  })
+
+  socket.emit('fabric:init');
+
+  var canvas = new fabric.Canvas('c');
+
+  var triangle = new fabric.Triangle({
+    width: 200, height: 150, fill: 'green', left: 150, top: 150
+  });
+
+  canvas.add(triangle);
+
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", deviceOrientationListener);
+  } else {
+    alert("Sorry, your browser doesn't support Device Orientation");
+  }
+
+  function deviceOrientationListener(event) {
+    // console.log(event.gamma);
+    socket.emit('rotateTriangle', event.gamma);
+  }
+
+  </script>
+</body>
+</html>

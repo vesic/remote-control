@@ -1,4 +1,6 @@
 'use strict';
+var express = require('express')
+// var app = express()
 
 var app = require('express')();
 var http = require('http').Server(app);
@@ -8,6 +10,8 @@ var moment = require('moment');
 var MobileDetect = require('mobile-detect');
 
 var port = process.env.PORT || 3000;
+
+app.use(express.static('public'))
 
 var count = 0
 var l = 1
@@ -20,6 +24,14 @@ app.get('/', function(req, res){
   var md = new MobileDetect(req.headers['user-agent']);
   console.log(md.is('iPhone'));
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/demo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'demo.html'));
+});
+
+app.get('/fabric', (req, res) => {
+  res.sendFile(path.join(__dirname, 'fabric.html'));
 });
 
 io.on('connection', function(socket){
@@ -64,15 +76,20 @@ io.on('connection', function(socket){
     // }
   })
 
+  socket.on('fabric:init', () => {
+    console.log('fabric:init');
+  })
+
+  socket.on('rotateTriangle', function(event) {
+    console.log('gamma', event);
+    io.emit('rotatedTriangle', event);
+  })
+
   socket.on('disconnect', function(){
     delete clients[socket.id];
     clientCount = Object.keys(clients).length;
     io.emit('clientCountUpdate', clientCount);
   });
-});
-
-app.get('/demo', (req, res) => {
-  res.sendFile(path.join(__dirname, 'demo.html'));
 });
 
 http.listen(port, function(){
