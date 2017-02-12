@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    #left {
+      background: lightblue;
+    }
+    #right {
+      background: lightcoral;
+    }
+  </style>
+</head>
+<body>
+  <h1>Client</h1>
+
+  <div id="rotate">
+    <h1 id='left'>Rotate Left</h1>
+    <h1 id='right'>Rotate Right</h1>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+
+    socket.emit('demo-02:conn')
+
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener("deviceorientation", handleOrientation, true);
+    } else {
+      alert("Sorry, your browser doesn't support Device Orientation");
+    }
+
+    function handleOrientation(event) {
+      // how to serialize event
+      // http://stackoverflow.com/questions/11547672/how-to-stringify-event-object
+      var absolute = event.absolute;
+      var alpha    = event.alpha;
+      var beta     = event.beta;
+      var gamma    = event.gamma;
+
+      socket.emit('demo-02:change', {alpha, beta, gamma});
+    }
+
+    document.querySelector('#left').addEventListener('click', event => {
+      socket.emit('rotateLeft', socket.id);
+    });
+
+    document.querySelector('#right').addEventListener('click', event => {
+      socket.emit('rotateRight', socket.id);
+    })
+  </script>
+
+</body>
+</html>

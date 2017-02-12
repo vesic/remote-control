@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    svg {
+      background: #FDF3E7
+    }
+  </style>
+</head>
+<body>
+  <h1>Server</h1>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/scripts/raphael.min.js"></script>
+
+  <script>
+    var socket = io();
+    // set canvas dimensions
+    let width = 1024; //window.innerWidth;
+    let height = 768; //window.innerHeight;
+    var paper = Raphael(0, 100, width, height);
+    let connected = {};
+    function create() {
+      let colors = ['red', 'green', 'blue', 'yellow', 'black'];
+      let random = Math.floor((Math.random() * colors.length));
+      let randomColor = colors[random];
+
+      let sizes = [100, 150, 200, 250, 300];
+      let x = Math.floor((Math.random() * sizes.length));
+      let y = Math.floor((Math.random() * sizes.length));
+      
+      let object = paper.rect(200, 200, sizes[x], sizes[y]);
+      object.attr('fill', randomColor);
+      object.attr('stroke', '#fff');
+      return object;
+      // var circle = paper.circle(100, 100, 100);
+      // circle.attr("fill", randomColor);
+      // circle.attr("stroke", "#fff");
+      // return circle;
+      // setTimeout(function() {
+      //   circle.remove();
+      // }, 1000);
+    }
+
+    socket.on('create:object', event => {
+      connected[event] = create();
+      console.log(connected)
+    });
+
+    socket.on('destroy:object', event => {
+      connected[event].remove();
+      delete connected[event];
+      console.log(connected)
+    });
+
+    socket.on('update:client', event => {
+      let client = connected[event.id];
+      // console.log(client)
+      client.animate({
+        x: event.event.gamma * 10 + 200,
+        y: - event.event.beta * 5 + 200
+      }, 50)
+      // console.log(event.id);
+    })
+
+    socket.on('handleRotateLeft', id => {
+      connected[id].rotate(45);
+    });
+
+    socket.on('handleRotateRight', id => {
+      connected[id].rotate(-45);
+    });
+
+  </script>
+</body>
+</html>

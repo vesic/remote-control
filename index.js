@@ -34,6 +34,14 @@ app.get('/fabric', (req, res) => {
   res.sendFile(path.join(__dirname, 'fabric.html'));
 });
 
+app.get('/demo-02', (req, res) => {
+  let page = 'demo-02-server.html';
+  var md = new MobileDetect(req.headers['user-agent']);
+  if (md.mobile()) page = 'demo-02-client.html';
+  // console.log(md.is('Phone'))
+  res.sendFile(path.join(__dirname, page));
+});
+
 io.on('connection', function(socket){
 
   socket.on('demo:click', () => {
@@ -85,7 +93,32 @@ io.on('connection', function(socket){
     io.emit('rotatedTriangle', event);
   })
 
+  /**
+   * demo-02
+   * 
+   */
+  socket.on('demo-02:conn', event => {
+    console.log('demo02 connected')
+    io.emit('create:object', socket.id);
+  });
+
+  socket.on('demo-02:change', event => {
+    console.log('change', event);
+    io.emit('update:client', { event:event, id:socket.id });
+  });
+
+  socket.on('rotateLeft', event => {
+    io.emit('handleRotateLeft', event);
+  });
+
+  socket.on('rotateRight', event => {
+    io.emit('handleRotateRight', event);
+  });
+
   socket.on('disconnect', function(){
+    // demo-02
+    io.emit('destroy:object', socket.id);
+    // end demo-02
     delete clients[socket.id];
     clientCount = Object.keys(clients).length;
     io.emit('clientCountUpdate', clientCount);
