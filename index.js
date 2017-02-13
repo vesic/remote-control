@@ -44,6 +44,10 @@ app.get('/demo-02', (req, res) => {
   res.sendFile(path.join(__dirname, page));
 });
 
+app.get('/game', (req, res) => {
+  res.sendFile(path.join(__dirname, 'game.html'));
+});
+
 io.on('connection', function(socket){
 
   socket.on('demo:click', () => {
