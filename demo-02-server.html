@@ -58,6 +58,7 @@
     socket.on('destroy:object', (id, connectedClients) => {
       connected[id].remove();
       delete connected[id];
+      delete connectedClients[id];
       updateClientsCount(connectedClients);
       console.log(connected)
     });

@@ -31,7 +31,7 @@
   <script>
     var socket = io();
 
-    socket.emit('demo-02:conn')
+    socket.emit('demo-02:conn', socket.id)
 
     if (window.DeviceOrientationEvent) {
       window.addEventListener("deviceorientation", handleOrientation, true);

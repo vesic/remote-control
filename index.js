@@ -17,6 +17,7 @@ var count = 0
 var l = 1
 var clients = {}
 var events = []
+var connectedClients = {}
 
 let clientCount;
 // let connectedClients = 0;
@@ -56,11 +57,10 @@ io.on('connection', function(socket){
   // init clicks log
   socket.emit('init', events);
 
-  if (clients[socket.id] == undefined) {
-    clients[socket.id] = socket
+  if (connectedClients[socket.id] == undefined) {
+    connectedClients[socket.id] = socket
   }
-
-  clientCount = Object.keys(clients).length;
+  clientCount = Object.keys(connectedClients).length;
 
   io.emit('clientCountUpdate', clientCount);
 
@@ -99,9 +99,14 @@ io.on('connection', function(socket){
    * 
    */
   socket.on('demo-02:conn', event => {
-    console.log('demo02 connected')
-    let connectedClients = Object.keys(clients).length - 1;
-    io.emit('create:object', socket.id, connectedClients);
+    console.log('demo02 connected', socket.id)
+
+    if (clients[socket.id] == undefined) {
+      clients[socket.id] = socket
+    }
+
+    let count = Object.keys(clients).length;
+    io.emit('create:object', socket.id, count);
   });
 
   socket.on('demo-02:change', event => {
@@ -118,14 +123,14 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
-    // demo-02
-    // end demo-02
+
     delete clients[socket.id];
-    clientCount = Object.keys(clients).length - 1;
+    clientCount = Object.keys(clients).length;
     io.emit('clientCountUpdate', clientCount);
 
-    let connectedClients = Object.keys(clients).length;
-    io.emit('destroy:object', socket.id, connectedClients);
+    delete connectedClients[socket.id];
+    let count = Object.keys(connectedClients).length - 1;
+    io.emit('destroy:object', socket.id, count);
   });
 });
 
