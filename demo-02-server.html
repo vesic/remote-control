@@ -5,7 +5,7 @@
   <title>Document</title>
   <style>
     svg {
-      background: #FDF3E7
+      background: #333745;
     }
   </style>
 </head>
@@ -23,7 +23,7 @@
     var paper = Raphael(0, 100, width, height);
     let connected = {};
     function create() {
-      let colors = ['red', 'green', 'blue', 'yellow', 'black'];
+      let colors = ['#ACF0F2', '#1695A3', '#225378', '#EB7F00', '#1F8A70', '#BEDB39', '#FFE11A', '#FD7400'];
       let random = Math.floor((Math.random() * colors.length));
       let randomColor = colors[random];
 
@@ -59,18 +59,18 @@
       let client = connected[event.id];
       // console.log(client)
       client.animate({
-        x: event.event.gamma * 10 + 200,
+        x: - event.event.gamma * 10 + 200,
         y: - event.event.beta * 5 + 200
       }, 50)
       // console.log(event.id);
     })
 
     socket.on('handleRotateLeft', id => {
-      connected[id].rotate(45);
+      connected[id].rotate(-20);
     });
 
     socket.on('handleRotateRight', id => {
-      connected[id].rotate(-45);
+      connected[id].rotate(20);
     });
 
   </script>
