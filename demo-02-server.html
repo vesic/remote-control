@@ -10,7 +10,7 @@
   </style>
 </head>
 <body>
-  <h1>Server</h1>
+  <h1>Number of connected clients: <span id='clients'>0</span>.</h1>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/scripts/raphael.min.js"></script>
@@ -22,7 +22,8 @@
     let height = 768; //window.innerHeight;
     var paper = Raphael(0, 100, width, height);
     let connected = {};
-    function create() {
+
+    function createShape() {
       let colors = ['#ACF0F2', '#1695A3', '#225378', '#EB7F00', '#1F8A70', '#BEDB39', '#FFE11A', '#FD7400'];
       let random = Math.floor((Math.random() * colors.length));
       let randomColor = colors[random];
@@ -44,14 +45,20 @@
       // }, 1000);
     }
 
-    socket.on('create:object', event => {
-      connected[event] = create();
-      console.log(connected)
+    function updateClientsCount(count) {
+      document.querySelector('#clients').innerHTML = count; //TODO cache clients
+    }
+
+    socket.on('create:object', (event, connectedClients) => {
+      connected[event] = createShape();
+      updateClientsCount(connectedClients);
+      console.log(connected, connectedClients);
     });
 
-    socket.on('destroy:object', event => {
-      connected[event].remove();
-      delete connected[event];
+    socket.on('destroy:object', (id, connectedClients) => {
+      connected[id].remove();
+      delete connected[id];
+      updateClientsCount(connectedClients);
       console.log(connected)
     });
 
@@ -59,7 +66,7 @@
       let client = connected[event.id];
       // console.log(client)
       client.animate({
-        x: - event.event.gamma * 10 + 200,
+        x: event.event.gamma * 10 + 200,
         y: - event.event.beta * 5 + 200
       }, 50)
       // console.log(event.id);

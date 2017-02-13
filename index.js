@@ -19,6 +19,7 @@ var clients = {}
 var events = []
 
 let clientCount;
+// let connectedClients = 0;
 
 app.get('/', function(req, res){
   var md = new MobileDetect(req.headers['user-agent']);
@@ -99,7 +100,8 @@ io.on('connection', function(socket){
    */
   socket.on('demo-02:conn', event => {
     console.log('demo02 connected')
-    io.emit('create:object', socket.id);
+    let connectedClients = Object.keys(clients).length - 1;
+    io.emit('create:object', socket.id, connectedClients);
   });
 
   socket.on('demo-02:change', event => {
@@ -117,11 +119,13 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     // demo-02
-    io.emit('destroy:object', socket.id);
     // end demo-02
     delete clients[socket.id];
-    clientCount = Object.keys(clients).length;
+    clientCount = Object.keys(clients).length - 1;
     io.emit('clientCountUpdate', clientCount);
+
+    let connectedClients = Object.keys(clients).length;
+    io.emit('destroy:object', socket.id, connectedClients);
   });
 });
 

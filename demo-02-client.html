@@ -6,17 +6,22 @@
   <style>
     #left {
       background: lightblue;
-      height: 2em;
+      min-height: 600px;
+      flex: 1;
+      /*height: 2em;*/
     }
     #right {
       background: lightcoral;
-      height: 2em;
+      flex: 1;
+      /*height: 2em;*/
+    }
+    #rotate {
+      text-align: center;
+      display: flex;
     }
   </style>
 </head>
 <body>
-  <h1>Client</h1>
-
   <div id="rotate">
     <h1 id='left'>Rotate Left</h1>
     <h1 id='right'>Rotate Right</h1>
